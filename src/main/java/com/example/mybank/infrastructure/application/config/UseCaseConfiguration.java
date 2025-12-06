@@ -12,6 +12,9 @@ import com.example.mybank.domain.usecase.user.FindUser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.mybank.domain.usecase.stock.CreateStock;
+import com.example.mybank.domain.usecase.stock.ListStocks;
+import com.example.mybank.domain.ports.StockRepository;
 
 @Configuration
 public class UseCaseConfiguration {
@@ -43,5 +46,15 @@ public class UseCaseConfiguration {
     @Bean
     public FindUser findUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return new FindUser(userRepository, passwordEncoder);
+    }
+
+    @Bean
+    public CreateStock createStockQuote(StockRepository stockRepository) {
+        return new CreateStock(stockRepository);
+    }
+
+    @Bean
+    public ListStocks listStocks(StockRepository stockRepository) {
+        return new ListStocks(stockRepository);
     }
 }

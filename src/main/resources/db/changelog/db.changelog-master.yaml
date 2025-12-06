@@ -110,3 +110,53 @@ databaseChangeLog:
             tableName: users
             columnNames: login
             constraintName: uk_users_login
+  - changeSet:
+      id: 202512061734
+      author: fhne99
+      changes:
+        - createTable:
+            tableName: stocks
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(26)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: symbol
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_cents
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_stocks_symbol
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+        - createIndex:
+            indexName: idx_stocks_timestamp
+            tableName: stocks
+            columns:
+              - column:
+                  name: timestamp

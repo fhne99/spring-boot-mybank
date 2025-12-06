@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours de Bourse - MyBank</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="/js/app.js" ></script> <!-- Auth et helpers -->
+    <script src="/js/stocks.js" ></script>
+</head>
+<body>
+<main class="container">
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><strong>MyBank</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/">Clients</a></li>
+            <li><a href="/stocks" aria-current="page">📈 Cours de Bourse</a></li>
+        </ul>
+    </nav>
+
+    <!-- En-tête -->
+    <hgroup>
+        <h1>📈 Cours de Bourse</h1>
+        <p>Cotations en temps réel</p>
+    </hgroup>
+
+    <!-- Application Alpine.js -->
+    <div x-data="stocksApp()" x-init="init()">
+
+        <!-- Message d'erreur -->
+        <div x-show="error" x-cloak>
+            <article style="background-color: var(--pico-del-color); border-color: var(--pico-del-color);">
+                <p x-text="error"></p>
+            </article>
+        </div>
+
+        <!-- Loader -->
+        <div x-show="loading" x-cloak>
+            <article aria-busy="true">Chargement des cotations...</article>
+        </div>
+
+        <!-- Formulaire d'ajout -->
+        <article>
+            <header><strong>➕ Ajouter une cotation</strong></header>
+            <form @submit.prevent="createStock">
+                <div class="grid">
+                    <label>
+                        Symbole
+                        <input
+                                type="text"
+                                x-model="newStock.symbol"
+                                placeholder="Ex: AAPL"
+                                required
+                                maxlength="10"
+                                pattern="[A-Z0-9]+"
+                                style="text-transform: uppercase;"
+                        >
+                    </label>
+                    <label>
+                        Entreprise
+                        <input
+                                type="text"
+                                x-model="newStock.companyName"
+                                placeholder="Ex: Apple Inc."
+                                required
+                                maxlength="100"
+                        >
+                    </label>
+                </div>
+                <div class="grid">
+                    <label>
+                        Prix (centimes)
+                        <input
+                                type="number"
+                                x-model.number="newStock.priceCents"
+                                placeholder="Ex: 15000 = 150.00"
+                                required
+                                min="0"
+                                step="1"
+                        >
+                        <small>Le prix en centimes (ex: 15000 pour 150.00€)</small>
+                    </label>
+                    <label>
+                        Devise
+                        <select x-model="newStock.currency" required>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="USD">USD - Dollar</option>
+                            <option value="GBP">GBP - Livre Sterling</option>
+                            <option value="JPY">JPY - Yen</option>
+                            <option value="CHF">CHF - Franc Suisse</option>
+                        </select>
+                    </label>
+                </div>
+                <button type="submit" :disabled="submitting" :aria-busy="submitting">
+                    <span x-text="submitting ? 'Ajout en cours...' : 'Ajouter la cotation'"></span>
+                </button>
+            </form>
+        </article>
+
+        <!-- Tableau des cotations -->
+        <div x-show="!loading && stocks.length > 0" x-cloak>
+            <figure>
+                <table role="grid">
+                    <thead>
+                    <tr>
+                        <th>Symbole</th>
+                        <th>Entreprise</th>
+                        <th>Prix</th>
+                        <th>Devise</th>
+                        <th>Date/Heure</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template x-for="stock in stocks" :key="stock.id">
+                        <tr>
+                            <td><strong x-text="stock.symbol"></strong></td>
+                            <td x-text="stock.companyName"></td>
+                            <td>
+                                <span x-text="formatPrice(stock.price, stock.currency)"></span>
+                                <br>
+                                <small style="color: var(--pico-muted-color);" x-text="stock.priceCents + ' centimes'"></small>
+                            </td>
+                            <td x-text="stock.currency"></td>
+                            <td x-text="formatDate(stock.timestamp)"></td>
+                        </tr>
+                    </template>
+                    </tbody>
+                </table>
+            </figure>
+        </div>
+
+        <!-- Message si aucune cotation -->
+        <article x-show="!loading && stocks.length === 0" x-cloak>
+            <p>📊 Aucune cotation disponible. Ajoutez-en une pour commencer !</p>
+        </article>
+    </div>
+</main>
+
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+</body>
+</html>

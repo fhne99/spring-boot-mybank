@@ -61,4 +61,7 @@ public class PageController {
     public String errorGeneric() {
         return "error/error";
     }
+
+    @GetMapping("/stocks")
+    public String stocksPage() { return "stocks"; }
 }

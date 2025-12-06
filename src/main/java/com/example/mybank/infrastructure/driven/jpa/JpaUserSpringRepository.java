@@ -10,6 +10,5 @@ import java.util.UUID;
 @Repository
 public interface JpaUserSpringRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByLoginIgnoreCase(String login);
-
     boolean existsByLoginIgnoreCase(String login);
 }
