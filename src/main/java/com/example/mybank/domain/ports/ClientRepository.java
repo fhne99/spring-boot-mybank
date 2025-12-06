@@ -8,11 +8,8 @@ import java.util.List;
 
 public interface ClientRepository {
     List<Client> findAll();
-
     Client add(Client client);
-
     boolean existsBy(Name lastName, Name firstName);
-
     boolean existsById(Client.Id clientId);
 }
 

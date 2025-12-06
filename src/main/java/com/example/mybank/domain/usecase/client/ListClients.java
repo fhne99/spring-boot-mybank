@@ -10,11 +10,9 @@ import java.util.List;
 public class ListClients {
     private static final Logger logger = LoggerFactory.getLogger(ListClients.class);
     private final ClientRepository clientRepository;
-
     public ListClients(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
-
     public List<Client> all() {
         logger.debug("Listing all clients");
         return clientRepository.findAll();

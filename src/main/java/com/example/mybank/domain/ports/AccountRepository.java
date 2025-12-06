@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface AccountRepository {
     Account save(Account account);
-
     List<Account> findByClientId(Client.Id clientId);
 }

@@ -37,7 +37,7 @@ public class StockController {
     public ResponseEntity<List<StockDTO>> listAll() {
         log.info("GET /api/stocks - Listing all stock quotes");
 
-        List<Stock> stocks = listStocks.execute(); // Typé <Stock>
+        List<Stock> stocks = listStocks.execute();
         List<StockDTO> dtos = stocks.stream()
                 .map(StockDTO::fromDomain)
                 .collect(Collectors.toList());

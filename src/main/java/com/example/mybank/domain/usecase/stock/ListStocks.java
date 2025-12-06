@@ -1,6 +1,5 @@
 package com.example.mybank.domain.usecase.stock;
 
-import com.example.mybank.domain.model.Stock;
 import com.example.mybank.domain.ports.StockRepository;
 import java.util.List;
 import java.util.Objects;

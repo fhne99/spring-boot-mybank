@@ -34,10 +34,8 @@ async function fetchWithRedirect(url, options = {}, withRedirect = true) {
         const res = await fetch(url, options);
         if (!res.ok) {
             if (withRedirect) {
-                // Decide where to redirect based on status
                 const status = res.status;
                 if (status === 401) {
-                    // Keep current UX: redirect to login for unauthorized
                     window.location.href = '/login';
                 } else if (status === 403) {
                     window.location.href = '/error/403';
@@ -46,7 +44,6 @@ async function fetchWithRedirect(url, options = {}, withRedirect = true) {
                 } else if (status >= 500) {
                     window.location.href = '/error/500';
                 } else {
-                    // Fallback
                     window.location.href = '/error/generic';
                 }
             } else {
@@ -56,7 +53,6 @@ async function fetchWithRedirect(url, options = {}, withRedirect = true) {
         return res.json();
     } catch (e) {
         if (withRedirect) {
-            // Network error or CORS, show generic error page
             window.location.href = '/error/generic';
         }
         throw e;

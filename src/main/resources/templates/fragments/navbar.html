@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="custom-navbar" style="margin-top: 10px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-around">
+    <div class="custom-navbar-left">
+        <a href="/" class="custom-navbar-logo-link" style="text-decoration: none; color: black;">
+            <strong class="custom-navbar-logo" style="font-size: 35px;">MyBank</strong>
+        </a>
+    </div>
+
+    <div class="custom-navbar-center" style="display: flex; gap: 40px;">
+        <a href="/accounts" class="custom-navbar-item nav-auth-only" style="text-decoration: none; flex-direction: row; align-content: center; align-items: center; color: black; gap: 3px;">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>Mes comptes</span>
+        </a>
+        <a href="/stocks" class="custom-navbar-item nav-auth-only" style="text-decoration: none; flex-direction: row; align-content: center; align-items: center; color: black; gap: 3px">
+            <i class="fa-solid fa-money-bill-trend-up"></i>
+            <span>Cours de bourse</span>
+        </a>
+    </div>
+
+    <div class="custom-navbar-right" style="display: flex">
+        <a href="/login" class="custom-navbar-item nav-guest-only" style="text-decoration: none; flex-direction: row; align-content: center; align-items: center; color: black; gap: 3px">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Se connecter</span>
+        </a>
+        <a href="#" class="custom-navbar-item nav-auth-only" id="nav-logout" style="text-decoration: none; flex-direction: row; align-content: center; align-items: center; color: black; gap: 3px;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Se déconnecter</span>
+        </a>
+    </div>
+</nav>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script src="/js/navbar.js" defer></script>
+</body>
+</html>

@@ -7,9 +7,7 @@ import java.util.Optional;
 
 public interface UserRepository {
     User add(User user);
-
     boolean existsByLoginIgnoreCase(Login login);
-
     Optional<User> findByLoginIgnoreCase(Login login);
 }
 
