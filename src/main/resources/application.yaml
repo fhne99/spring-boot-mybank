@@ -2,9 +2,9 @@ spring:
   application:
     name: demoMyBank
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydatabase
-    username: myuser
-    password: secret
+    url: jdbc:postgresql://localhost:5435/fhne99
+    username: fhne99
+    password: fhne99
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
