@@ -1,0 +1,128 @@
+package com.example.mybank.infrastructure.driving.rest;
+
+import com.example.mybank.domain.usecase.account.CreateAccount.ClientNotFoundException;
+import com.example.mybank.domain.usecase.client.CreateClient.ClientAlreadyExistsException;
+import com.example.mybank.domain.usecase.user.CreateUser.UserAlreadyExistsException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.springframework.http.HttpStatus.*;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
+        return getErrorResponseResponseEntity(request, NOT_FOUND, "Resource not found");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupportedFound(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        return getErrorResponseResponseEntity(request, METHOD_NOT_ALLOWED, "Method not allowed");
+    }
+
+    @ExceptionHandler(ClientAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleClientAlreadyExists(ClientAlreadyExistsException ex,
+                                                                   HttpServletRequest request) {
+        logger.warn("ClientAlreadyExists: {}", ex.getMessage());
+        return getErrorResponseResponseEntity(request, CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleClientNotFound(ClientNotFoundException ex,
+                                                              HttpServletRequest request) {
+        logger.warn("ClientNotFound: {}", ex.getMessage());
+        return getErrorResponseResponseEntity(request, NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex,
+                                                                 HttpServletRequest request) {
+        logger.warn("UserAlreadyExistsException: {}", ex.getMessage());
+        return getErrorResponseResponseEntity(request, CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex,
+                                                                       HttpServletRequest request) {
+        logger.warn("AuthenticationException: {}", ex.getMessage());
+        return getErrorResponseResponseEntity(request, UNAUTHORIZED, "Authentication required: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex,
+                                                                     HttpServletRequest request) {
+        logger.warn("AccessDeniedException: {}", ex.getMessage());
+        return getErrorResponseResponseEntity(request, FORBIDDEN, "Access denied: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
+                                                          HttpServletRequest request) {
+        Map<String, String> errors = new LinkedHashMap<>();
+        for (var error : ex.getBindingResult().getAllErrors()) {
+            String field = error instanceof FieldError fe ? fe.getField() : error.getObjectName();
+            String message = error.getDefaultMessage();
+            errors.put(field, message);
+        }
+        return getErrorResponseResponseEntity(request, BAD_REQUEST, "Validation failed", errors);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
+        logger.error("Unhandled exception", ex);
+        return getErrorResponseResponseEntity(request, INTERNAL_SERVER_ERROR, ex.getMessage() != null ? ex.getMessage() : "Unexpected error");
+    }
+
+    private static ResponseEntity<ErrorResponse> getErrorResponseResponseEntity(HttpServletRequest request, HttpStatus status, String message) {
+        ErrorResponse body = ErrorResponse.basic(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(body);
+    }
+
+    private static ResponseEntity<ErrorResponse> getErrorResponseResponseEntity(HttpServletRequest request, HttpStatus status, String message, Map<String, String> errors) {
+        ErrorResponse body = new ErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                request.getRequestURI(),
+                errors
+        );
+        return ResponseEntity.status(status).body(body);
+    }
+
+    public record ErrorResponse(
+            Instant timestamp,
+            int status,
+            String error,
+            String message,
+            String path,
+            Map<String, String> validationErrors
+    ) {
+        public static ErrorResponse basic(Instant timestamp, int status, String error, String message, String path) {
+            return new ErrorResponse(timestamp, status, error, message, path, null);
+        }
+    }
+}
